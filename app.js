@@ -29,11 +29,26 @@ app.use(express.static('public'));
 
 // PROMISES
 function getUsers(){
-
+  return new Promise((resolve, reject) => {
+    fs.readFile('data.json', 'utf-8', (err, data)=> {
+      if(err){
+        reject(err);
+      } else {
+        const users = JSON.parse(data);
+        resolve(users);
+      }
+    });
+  });
 }
 
 app.get('/', (req,res) => {
-
+getUsers()
+  .then((users)=> {
+    res.render('index', {title: "Users", users: users.users});
+  })
+  .catch((err)=> {
+    res.render('error', {error: err});
+  });
 });
 
 
